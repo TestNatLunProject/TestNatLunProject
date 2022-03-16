@@ -131,23 +131,18 @@ public class homeFragment extends Fragment {
 //            }
 //        });
 
-        dbrefIndexes.addValueEventListener(new ValueEventListener() {
+        DatabaseReference testretrieve=db.getReference("Meets6").child("2022-03-16 13:39:15");
+        testretrieve.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                // This method is called once with the initial value and again
-                // whenever data at this location is updated.
-                for(DataSnapshot snapshot:dataSnapshot.getChildren()){
-                    //listpost.add(snapshot.getValue().toString());
-                    txtvReceive.setText(snapshot.getValue(String.class)+"/n");
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    txtvReceive.setText(dataSnapshot.child("Index").getValue(String.class));
                 }
-//                String value = dataSnapshot.getValue(String.class);
-//                txtvReceive.setText(value);
-//                Log.d(TAG, "Value is: " + value);
             }
+
             @Override
-            public void onCancelled(DatabaseError error) {
-                // Failed to read value
-                Log.w(TAG, "Failed to read value.", error.toException());
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
             }
         });
 
