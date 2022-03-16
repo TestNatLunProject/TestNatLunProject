@@ -39,7 +39,8 @@ public class homeFragment extends Fragment {
     private TextView txtvReceive;
     private EditText txtSend;
     private EditText txtName;
-    private ListView listViewPost;
+    private ListView lstvPost;
+    private static final String EMPTY_STRING = "";
 
     public static final String TAG=homeFragment.class.getSimpleName();
 
@@ -57,12 +58,14 @@ public class homeFragment extends Fragment {
         view=inflater.inflate(R.layout.frag_home,container,false);
 
         txtvReceive =view.findViewById(R.id.txtvReceive);
+        lstvPost=view.findViewById(R.id.lstvPost);
 
         btnSend=view.findViewById(R.id.btnSend);
         btnSend.setOnClickListener((new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 SendDataToDatabase(txtvReceive);
+                ReceiveDataToDatabase();
             }
         }));
 
@@ -84,28 +87,14 @@ public class homeFragment extends Fragment {
         }
         txtSend=view.findViewById(R.id.txtSend);
 
-        DatabaseReference dbrefNames=db.getReference("Meets6"/*Chỗ này là ID riêng biệt từng cuộc họp, nếu chưa tồn tại thì thêm vào*/)
+        DatabaseReference dbrefNames=db.getReference("Meets7"/*Chỗ này là ID riêng biệt từng cuộc họp, nếu chưa tồn tại thì thêm vào*/)
                 .child(timeStamp).child("Name");
-        DatabaseReference dbrefIndexes=db.getReference("Meets6"/*Chỗ này là ID riêng biệt từng cuộc họp, nếu chưa tồn tại thì thêm vào*/)
+        DatabaseReference dbrefIndexes=db.getReference("Meets7"/*Chỗ này là ID riêng biệt từng cuộc họp, nếu chưa tồn tại thì thêm vào*/)
                 .child(timeStamp).child("Index")/*mục post, bao gồm giá trị bên trong là name + index*/;
 
-        dbrefNames.setValue(txtName.getText().toString()).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if(task.isSuccessful()){
-                    Toast.makeText(getContext(), "succNames", Toast.LENGTH_SHORT).show();
-
+                if((txtSend.getText().toString().trim()).compareTo("")==0){
+                    return;
                 }
-                else{
-                    Toast.makeText(getContext(), "failNames", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-//        DatabaseReference dbrefTimestamps=db.getReference("Meets")
-//                .child("IDs")
-//                .child("Posts "+formatter.format(today))
-//                .child("Timestamps"/*Thời điểm post*/);
-
         dbrefIndexes.setValue(txtSend.getText().toString()).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
@@ -119,6 +108,29 @@ public class homeFragment extends Fragment {
             }
         });
         txtSend.getText().clear();
+//        DatabaseReference dbrefTimestamps=db.getReference("Meets")
+//                .child("IDs")
+//                .child("Posts "+formatter.format(today))
+//                .child("Timestamps"/*Thời điểm post*/);
+
+        String sendName=txtName.getText().toString();
+        if((txtName.getText().toString().trim()).compareTo("")==0){
+            sendName="unknow";
+        }
+        dbrefNames.setValue(sendName).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if(task.isSuccessful()){
+                    Toast.makeText(getContext(), "succNames", Toast.LENGTH_SHORT).show();
+
+                }
+                else{
+                    Toast.makeText(getContext(), "failNames", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+
 //        dbrefTimestamps.setValue(formatter.format(today).toString()).addOnCompleteListener(new OnCompleteListener<Void>() {
 //            @Override
 //            public void onComplete(@NonNull Task<Void> task) {
@@ -131,20 +143,7 @@ public class homeFragment extends Fragment {
 //            }
 //        });
 
-        DatabaseReference testretrieve=db.getReference("Meets6").child("2022-03-16 13:39:15");
-        testretrieve.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(dataSnapshot.exists()){
-                    txtvReceive.setText(dataSnapshot.child("Index").getValue(String.class));
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
+        ReceiveDataToDatabase();
 
 //        ArrayList<String> listpost=new ArrayList<>();
 //        ArrayAdapter adapterPost=new ArrayAdapter<String>(getContext(),R.layout.list_post,listpost);
@@ -187,6 +186,33 @@ public class homeFragment extends Fragment {
 //            }
 //        });
 
+    }
+
+    private void ReceiveDataToDatabase(){
+        FirebaseDatabase db = FirebaseDatabase.getInstance("https://howkteamandroid-default-rtdb.asia-southeast1.firebasedatabase.app/");
+
+        final ArrayList<String> listpost=new ArrayList<>();
+        final ArrayAdapter adapterPost=new ArrayAdapter<String>(getContext(),R.layout.list_post,listpost);
+        lstvPost.setAdapter(adapterPost);
+        DatabaseReference testretrieve=db.getReference("Meets6").child("2022-03-16 12:07:58");
+        testretrieve.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    listpost.clear();
+                    for(DataSnapshot snapshot:dataSnapshot.getChildren()){
+                        listpost.add(snapshot.getValue(String.class));
+                    }
+                    //txtvReceive.setText(dataSnapshot.child("Index").getValue(String.class));
+                    adapterPost.notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
     private String GetLocalID(){

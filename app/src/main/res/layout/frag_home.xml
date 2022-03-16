@@ -73,5 +73,14 @@
         app:menu="@menu/bot_nav"
         tools:layout_editor_absoluteX="0dp" />
 
+    <ListView
+        android:id="@+id/lstvPost"
+        android:layout_width="409dp"
+        android:layout_height="402dp"
+        android:layout_marginStart="1dp"
+        android:layout_marginTop="1dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtvReceive" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
