@@ -64,18 +64,16 @@ public class downloadFragment extends Fragment {
                 SendFileToDatabase();
             }
         }));
+
+
         Button btnChooseFile=view.findViewById(R.id.btnChooseFile);
         btnChooseFile.setOnClickListener((new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                     ChooseFile();
-
             }
         }));
-
         return view;
-
     }
 
     @Override
@@ -91,6 +89,7 @@ public class downloadFragment extends Fragment {
         intent.setType("video/mp4");
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(intent,86);
+
     }
 
     @Override

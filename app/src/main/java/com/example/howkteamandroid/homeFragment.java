@@ -44,7 +44,6 @@ public class homeFragment extends Fragment {
 
     public static final String TAG=homeFragment.class.getSimpleName();
 
-
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
@@ -65,7 +64,7 @@ public class homeFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 SendDataToDatabase(txtvReceive);
-                ReceiveDataToDatabase();
+                ReceiveDataFromDatabase();
             }
         }));
 
@@ -108,10 +107,6 @@ public class homeFragment extends Fragment {
             }
         });
         txtSend.getText().clear();
-//        DatabaseReference dbrefTimestamps=db.getReference("Meets")
-//                .child("IDs")
-//                .child("Posts "+formatter.format(today))
-//                .child("Timestamps"/*Thời điểm post*/);
 
         String sendName=txtName.getText().toString();
         if((txtName.getText().toString().trim()).compareTo("")==0){
@@ -131,81 +126,29 @@ public class homeFragment extends Fragment {
         });
 
 
-//        dbrefTimestamps.setValue(formatter.format(today).toString()).addOnCompleteListener(new OnCompleteListener<Void>() {
-//            @Override
-//            public void onComplete(@NonNull Task<Void> task) {
-//                if(task.isSuccessful()){
-//                    Toast.makeText(getApplicationContext(), "succTimestamp", Toast.LENGTH_SHORT).show();
-//                }
-//                else{
-//                    Toast.makeText(getApplicationContext(), "failTimestamp", Toast.LENGTH_SHORT).show();
-//                }
-//            }
-//        });
-
-        ReceiveDataToDatabase();
-
-//        ArrayList<String> listpost=new ArrayList<>();
-//        ArrayAdapter adapterPost=new ArrayAdapter<String>(getContext(),R.layout.list_post,listpost);
-//        listViewPost.setAdapter(adapterPost);
-//        DatabaseReference refView=FirebaseDatabase.getInstance().getReference().child("Meets6");
-//        refView.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                //listpost.clear();
-//                //txtvReceive.setText(value);
-//                for(DataSnapshot snapshot:dataSnapshot.getChildren()){
-//                    //listpost.add(snapshot.getValue().toString());
-//                    txtvReceive.setText(snapshot.getValue().toString()+"/n");
-//                }
-//                adapterPost.notifyDataSetChanged();
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//                Log.w(TAG, "Failed to read value.", databaseError.toException());
-//
-//            }
-//        });
-
-//        dbrefTimestamps.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                // This method is called once with the initial value and again
-//                // whenever data at this location is updated.
-//                String value = dataSnapshot.getValue(String.class);
-//
-//                //Log.d(TAG, "Value is: " + value);
-//                txtvReceive.append("\n"+value);
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError error) {
-//                // Failed to read value
-//                Log.w(TAG, "Failed to read value.", error.toException());
-//            }
-//        });
 
     }
 
-    private void ReceiveDataToDatabase(){
+    private void ReceiveDataFromDatabase(){
         FirebaseDatabase db = FirebaseDatabase.getInstance("https://howkteamandroid-default-rtdb.asia-southeast1.firebasedatabase.app/");
 
         final ArrayList<String> listpost=new ArrayList<>();
         final ArrayAdapter adapterPost=new ArrayAdapter<String>(getContext(),R.layout.list_post,listpost);
         lstvPost.setAdapter(adapterPost);
-        DatabaseReference testretrieve=db.getReference("Meets6").child("2022-03-16 12:07:58");
+        DatabaseReference testretrieve=db.getReference("Meets7");
+
         testretrieve.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(dataSnapshot.exists()){
-                    listpost.clear();
-                    for(DataSnapshot snapshot:dataSnapshot.getChildren()){
-                        listpost.add(snapshot.getValue(String.class));
+                listpost.clear();
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    for (DataSnapshot snap : snapshot.getChildren()) {
+                        listpost.add(snap.getValue(String.class));
+                        adapterPost.notifyDataSetChanged();
                     }
-                    //txtvReceive.setText(dataSnapshot.child("Index").getValue(String.class));
-                    adapterPost.notifyDataSetChanged();
                 }
+                //txtvReceive.setText(dataSnapshot.child("Index").getValue(String.class));
+
             }
 
             @Override
